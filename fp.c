@@ -102,7 +102,19 @@ int cekLogin(char *user, char *password){
 }
 
 void hapus(int x){
-	
+	for(x;x<indeks;x++){
+		strcpy(akun[x].nama,akun[x+1].nama);
+		strcpy(akun[x].kelamin,akun[x+1].kelamin);
+		strcpy(akun[x].pekerjaan,akun[x+1].pekerjaan);
+		strcpy(akun[x].nohp,akun[x+1].nohp);
+		strcpy(akun[x].username,akun[x+1].username);
+		strcpy(akun[x].password,akun[x+1].password);
+		akun[x].pinjaman=akun[x+1].pinjaman;
+		akun[x].simpanan=akun[x+1].simpanan;
+		akun[x].cicilan=akun[x+1].cicilan;
+		akun[x].besarcicilan=akun[x+1].besarcicilan;
+	}
+	indeks-=1;
 }
 
 void tampil(){
@@ -126,9 +138,7 @@ void tampil(){
 	}
 	else{
 		printf("============Daftar Anggota============\n\n");
-		printf("Tidak ada anggota...\nSilahkan tambahkan anggota terlebih dahulu...");
-		getch();
-		system("cls");
+		printf("Tidak ada anggota...\nSilahkan tambahkan anggota terlebih dahulu...\n");
 	}
 }
 
@@ -170,7 +180,7 @@ int main(){
 	char user[16];
 	char password[16];
 	int login=-1;
-	int keluar;
+	int keluar=0;
 	
 	//Atribut koperasi
 	int kas=5000000, pinjam, cicil;
@@ -180,9 +190,11 @@ int main(){
 		if(login==-1){
 			printf("============Koperasi============\n");
 			printf("Selamat datang di program koperasi Maju Mundur!\n");
-			printf("Silahkan login terlebih dahulu!\n\n");
+			printf("Silahkan login terlebih dahulu!\n");
+			printf("---------------------------------\n\n");
 			printf("1. Login\n");
-			printf("2. Buat akun\n\n");
+			printf("2. Buat akun\n");
+			printf("=================================\n");
 			printf("0. Keluar\n\n");
 			printf("Input : ");
 			scanf("%d", &input);
@@ -191,6 +203,7 @@ int main(){
 			if(input==1){
 				login:
 				printf("============Koperasi============\n");
+				printf("----------Login Anggota---------\n\n");
 				printf("Username : ");
 				scanf(" %[^\n]%*c", &user);
 				//Pengecekan username pada akun
@@ -246,6 +259,10 @@ int main(){
 			}
 			else if(input==0){
 				keluar=1;
+				system("cls");
+				printf("============Koperasi============\n");
+				printf("Terima kasih telah menggunakan aplikasi Koperasi Maju Mundur.");
+				break;
 			}
 			else{
 				goto menu;
@@ -254,6 +271,7 @@ int main(){
 		
 		else if(login==-2){
 			printf("============ADMINISTRATOR============\n");
+			printf("==============Koperasi===============\n");
 			printf("1. Manajemen Koperasi\n");
 			printf("2. Manajemen Akun Anggota\n\n");
 			printf("0. Log Out\n\n");
@@ -298,6 +316,7 @@ int main(){
 			if(input==2){
 				anggota:
 				printf("============ADMINISTRATOR============\n");
+				printf("============Manage Anggota===========\n");
 				printf("1. Lihat Data\n");
 				printf("2. Hapus Data\n");
 				printf("3. Ubah Data\n");
@@ -313,6 +332,7 @@ int main(){
 					printf("Tekan tombol apa saja untuk kembali...");
 					getch();
 					system("cls");	
+					goto anggota;
 				}
 				else if(input==2){
 					hapus:
@@ -330,11 +350,25 @@ int main(){
 					printf("============Hapus Anggota============\n");
 					printf("Pilih Data Anggota yang ingin dihapus!\n\n");
 					tampil();
+					printf("Masukkan angka 0 untuk kembali\n");
 					printf("\nInput : ");
 					scanf("%d", &input);
 					system("cls");
 					
-					int i=input;
+					int i=input-1;
+					if(input==0){
+						system("cls");
+						goto menu;
+					}
+					else if(input<=indeks){
+					}
+					else{
+						printf("======================================\n");
+						printf("Tidak ada Data anggota pada nomor %d!",input);
+						getch();
+						system("cls");
+						goto hapus;
+					}
 					printf("============Hapus Anggota============\n");
 					printf("Nama\t\t: %s\n",akun[i].nama);
 					printf("Kelamin\t\t: %s\n",akun[i].kelamin);
@@ -386,7 +420,7 @@ int main(){
 					}
 					else{
 						system("cls");
-						goto anggota;
+						goto menu;
 					}
 					system("cls");
 				}
@@ -396,6 +430,7 @@ int main(){
 			printf("============Koperasi============\n");
 			printf("Selamat datang di koperasi Maju Mundur!\n");
 			printf("Ada yang bisa saya bantu?\n");
+			printf("--------------------------------\n\n");
 			printf("1. Cek tabungan\n");
 			printf("2. Simpan uang\n");
 			printf("3. Pinjam uang\n");
@@ -422,8 +457,8 @@ int main(){
 				printf("============Tabungan============\n\n");
 				printf("Masukkan nominal uang : ");
 				scanf("%d", &akun[login].simpanan);
-				system("cls");
-				printf("Tabungan telah ditambahkan.");
+				printf("Tabungan telah ditambahkan.\n");
+				printf("Uang sejumlah Rp.%d telah ditambahkan ke dalam akun tabungan Anda...", akun[login].simpanan);
 				getch();
 				system("cls");
 			}
@@ -447,12 +482,17 @@ int main(){
 				int bunga=(pinjam/cicil)*2/100;
 				printf("============Pinjaman============\n\n");
 				printf("Anda akan mengirimkan formulir pinjaman untuk :\n");
-				printf("Pinjaman uang senilai Rp.%d\n",pinjam);
-				printf("Dengan total angsuran yang setelah dihitung dengan bunga sebesar Rp.%d\n",pinjam+(bunga*cicil));
-				printf("yang diangsur %d kali per bulan dengan bunga 2%% per bulan.\n", cicil);
+				printf("*********************************************************************************\n");
+				printf("* Pinjaman uang senilai Rp.%d						*\n",pinjam);
+				printf("* Dengan total angsuran yang setelah dihitung dengan bunga sebesar Rp.%d\t*\n",pinjam+(bunga*cicil));
+				printf("* yang diangsur %d kali per bulan dengan bunga 2%% per bulan.\t\t\t*\n", cicil);
+				printf("* Cicilan per bulan yang harus dibayarkan sebesar : Rp.%d\t\t\t*\n",pinjam/cicil+bunga);
 				if(pinjam>kas && pinjam!=0){
-					printf("Dikarenakan jumlah pinjaman anda terlalu besar, kemungkinan kami akan meninjau formulir permintaan anda terlebih dahulu.\n");
+				printf("*-------------------------------------------------------------------------------*\n");
+				printf("* Dikarenakan jumlah pinjaman anda terlalu besar, kemungkinan kami akan     	*\n");
+				printf("* meninjau formulir permintaan anda terlebih dahulu.  				*\n");
 				}
+				printf("*********************************************************************************\n");
 				printf("\nApakah anda yakin?\n");
 				printf("1. Ya\n");
 				printf("2. Tidak\n");
@@ -498,12 +538,14 @@ int main(){
 						system("cls");
 						goto menu;
 					}
+					printf("============Pinjaman============\n\n");
 					printf("Anda belum mempunyai pinjaman.\n");
 					printf("Silahkan membuat/mengirimkan formulir pinjaman terlebih dahulu.");
 					getch();
 					system("cls");
 					goto menu;
 				}
+				printf("============Pinjaman============\n\n");
 				printf("Sisa cicilan anda : Rp.%d\n", akun[login].pinjaman);
 				printf("Kurang cicilan : %d kali\n\n", akun[login].cicilan);
 				printf("Anda akan membayar sebesar : %d\n\n", akun[login].besarcicilan);
@@ -548,10 +590,10 @@ int main(){
 
 				if(input==1){
 					login=-1;	
-				}	
+				}
 				system("cls");
 			}
 		}
 	}
-	while(keluar==1);
+	while(keluar==0);
 }
